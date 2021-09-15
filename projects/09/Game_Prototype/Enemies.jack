@@ -1,0 +1,41 @@
+class Enemies {
+    
+    field int x_coord,y_coord,rad;
+    
+    constructor Enemies new(int x, int y, int r) {
+        
+        let x_coord = x;
+        let y_coord = y;
+        let rad = r;
+        
+        do Screen.drawCircle(x,y,r);
+        
+        return this;
+    }
+    
+    method int getCenterx() {
+        return x_coord;
+    }
+    
+    method int getCentery() {
+        return y_coord;
+    }
+    
+    method int getRadius() {
+        return rad;
+    }
+    
+    method void dispose() {
+        do Memory.deAlloc(this);
+        
+        return;
+    }
+    
+    method void killed() {
+        do Screen.setColor(false);
+        do Screen.drawCircle(x_coord,y_coord,rad);   
+        do Screen.setColor(true);
+        
+        return;
+    }
+}

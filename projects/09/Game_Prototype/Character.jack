@@ -1,0 +1,138 @@
+class Character {
+    
+    field int x_coord,y_coord;
+    
+    constructor Character new(int x, int y) {
+        
+        let x_coord = x;
+        let y_coord = y;
+        
+        do drawCharacter(x,y);
+        
+        return this;
+    }
+    
+    method boolean canMoveUp(Character c) {
+        
+        if((y_coord-50) > 4) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    method void moveUp(Character c) {
+        
+        if(canMoveUp(c) = true) {
+            
+            //Delete old character position
+            do Screen.setColor(false);
+            do drawCharacter(x_coord,y_coord);
+        
+            //Create new character position
+            do Screen.setColor(true);
+            let y_coord = y_coord-5;
+            do drawCharacter(x_coord,y_coord);
+        }
+        return;
+    }
+    
+     method boolean canMoveDown(Character c) {
+        
+        if((y_coord+50) < 251) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+     method void moveDown(Character c) {
+        
+        if(canMoveDown(c) = true) {
+            
+            //Delete old character position
+            do Screen.setColor(false);
+            do drawCharacter(x_coord,y_coord);
+        
+            //Create new character position
+            do Screen.setColor(true);
+            let y_coord = y_coord+5;
+            do drawCharacter(x_coord,y_coord);
+        }
+        return;
+    }
+    
+    method boolean canMoveLeft(Character c) {
+        
+        if((x_coord) > 4) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+     method void moveLeft(Character c) {
+        
+        if(canMoveLeft(c) = true) {
+            
+            //Delete old character position
+            do Screen.setColor(false);
+            do drawCharacter(x_coord,y_coord);
+        
+            //Create new character position
+            do Screen.setColor(true);
+            let x_coord = x_coord-5;
+            do drawCharacter(x_coord,y_coord);
+        }
+        return;
+    }
+    
+    method boolean canMoveRight(Character c) {
+        
+        if((x_coord+50) < 507) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+     method void moveRight(Character c) {
+        
+        if(canMoveRight(c) = true) {
+            
+            //Delete old character position
+            do Screen.setColor(false);
+            do drawCharacter(x_coord,y_coord);
+        
+            //Create new character position
+            do Screen.setColor(true);
+            let x_coord = x_coord+5;
+            do drawCharacter(x_coord,y_coord);
+        }
+        return;
+    }
+    
+    method void drawCharacter(int x, int y) {
+        
+        //Character
+        do Screen.drawRectangle(x,y,x+50,y+50);
+        
+        //Sword
+        do Screen.drawRectangle(x+10,y-50,x+20,y);
+        do Screen.drawRectangle(x+5,y-10,x+25,y-5);
+        
+        return;
+    }
+    
+    method int getSwordx() {
+        return x_coord+10;
+    }
+    
+    method int getSwordy() {
+        return y_coord-50;
+    }
+}

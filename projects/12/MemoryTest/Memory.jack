@@ -1,0 +1,118 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Memory.jack
+
+/**
+ * Memory operations library.
+ */ 
+class Memory {
+
+    static int heap_base,heap_end,heap_size,length,next;
+    static Array memory,freeList,freeList_first,freeList_current,freeList_previous;
+    
+    /** Initializes memory parameters. */
+    function void init() {
+        
+        let heap_base = 2048;
+        let heap_end = 16383;
+        let heap_size = heap_end - heap_base;
+        let length = 0;
+        let next = 1;
+        
+        let memory = 0;
+        let freeList = heap_base;
+        let freeList[length] = heap_size;
+        let freeList[next] = null; 
+        let freeList_first = freeList;
+        let freeList_current = freeList;
+        let freeList_previous = null;
+        
+        return;
+    }
+
+    /** Returns the value of the main memory at the given address. */
+    function int peek(int address) {
+
+        return memory[address];
+    }
+
+    /** Sets the value of the main memory at this address
+     *  to the given value. */
+    function void poke(int address, int value) {
+
+        let memory[address] = value;
+        
+        return;
+    }
+
+    /** finds and allocates from the heap a memory block of the 
+     *  specified size and returns a reference to its base address. */
+    function int alloc(int size) {
+        
+        var int addr,alloc_block_start_index;
+        
+        let freeList_current = freeList_first;
+        
+        while(~(freeList_current = null)) {
+            
+            let alloc_block_start_index = freeList_current[length]-1-size;
+            
+            //Check if current block has enough space.
+            if(freeList_current[length] > size) {
+                
+                let addr = freeList_current + alloc_block_start_index + 1;
+                let freeList_current[alloc_block_start_index] = size+1;
+                
+                //The remaining free block is large enough, only its length entry needs to be updated.
+                if(alloc_block_start_index > 1) {
+                    
+                    let freeList_current[length] = alloc_block_start_index;
+                }
+                //The remaining free block is too small and has to be removed from the free list.
+                else {
+                    
+                    //If the free block was the first element of the free list.
+                    if(freeList_current = freeList_first) {
+                        
+                        let freeList_first = freeList_current[next];
+                    }
+                    
+                    //If the free block was an element with adjacent free blocks in the free list.
+                    if((~(freeList_previous = null)) & (~(freeList_current[next] = null))) {
+                        
+                        let freeList_previous[next] = freeList_current[next];
+                    }
+                    
+                    //If the free block was the last element of the free list.
+                    if(freeList_current[next] = null) {
+                        
+                        let freeList_previous[next] = null;
+                    }      
+                }
+                
+                return addr;
+            }
+            //Current block did not have enough space, check the next one.
+            else {
+                
+                let freeList_previous = freeList_current;
+                let freeList_current = freeList_current[next];
+            }
+        }
+        
+        return null;
+    }
+
+    /** De-allocates the given object and frees its space. */
+    function void deAlloc(int object) {
+        
+        var Array freeList_new;
+        
+        let freeList_new = object-1;
+        let freeList_new[1] = freeList_first;
+        let freeList_first = freeList_new;
+        
+        return;
+    }    
+}

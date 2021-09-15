@@ -1,0 +1,230 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Screen.jack
+
+/**
+ * Graphic screen library.
+ */
+class Screen {
+
+    static int screen_base,screen_end,color;
+    static Array twoToThe;
+
+    /** Initializes the Screen. */
+    function void init() {
+        
+        //Initialize twoToThe
+        var int j,val;
+        
+        let j = 1;
+        let val = 1;
+        let twoToThe = Array.new(16);
+        let twoToThe[0] = val;
+        while(j < 16) {
+            
+            let val = val + val;
+            let twoToThe[j] = val;
+            
+            let j = j+1;
+        }
+        
+        let screen_base = 16384;
+        let screen_end = 24575;
+        let color = 1;
+        
+        return;
+    }
+
+    /** Erases the whole screen. */
+    function void clearScreen() {
+        
+        var int j;
+        let j = screen_base;
+        
+        while(j < screen_end+1) {
+           
+            do Memory.poke(j,0);    
+            
+            let j = j+1;
+        }
+        
+        return;
+    }
+
+    /** Sets the color to be used in further draw commands
+     *  where white = false, black = true. */
+    function void setColor(boolean b) {
+        
+        if(b) {
+            
+            let color = 1;
+        }
+        else {
+            
+            let color = 0;   
+        }
+        
+        return;
+    }
+
+    /** Draws the (x, y) pixel. */
+    function void drawPixel(int x, int y) {
+        
+        var int modified_word,addr;
+        
+        let addr = screen_base + Math.multiply(y,32) + Math.divide(x,16);
+        
+        if(color = 1) {
+            
+            let modified_word = twoToThe[Screen.modulo(x,16)] | Memory.peek(addr);
+        }
+        else {
+            
+            let modified_word = (~twoToThe[Screen.modulo(x,16)]) & Memory.peek(addr);
+        }
+        
+        do Memory.poke(addr, modified_word);
+        
+        return;
+    }
+
+    /** Draws a line from (x1, y1) to (x2, y2). */
+    function void drawLine(int x1, int y1, int x2, int y2) {
+        
+        var int dx,dy,dx_neg,dy_neg,a,b,inequation;
+        
+        //Straight vertical lines.
+        if(x1 = x2) {
+            
+            do Screen.draw_vertical(y1,y2,x1);
+        }
+        
+        //Straight horizontal lines.
+        if(y1 = y2) {
+            
+            //do Screen.drawHLine(x1, x2, y1);
+            do Screen.draw_horizontal(x1,x2,y1);
+        }
+        else {
+            
+            //Variables to change signs of a and b with a simple multiplication.
+            let dx_neg = 1;
+            let dy_neg = 1;
+            
+            if(x1 > x2) {
+                
+                let dx_neg = -1;
+            }
+            
+            if(y1 > y2) {
+                
+                let dy_neg = -1;  
+            }
+            
+            let dx = Math.abs(x2-x1);
+            let dy = Math.abs(y2-y1);
+                
+            let a = 0;
+            let b = 0;
+             
+            let inequation = 0;
+                
+            while(((x1+a) < (x1+dx+1)) & ((y1+b) < (y1+dy+1))) {
+               
+                do Screen.drawPixel(x1+Math.multiply(a,dx_neg),y1+Math.multiply(b,dy_neg));
+                    
+                if(inequation < 0) {
+                    
+                    let a = a+1;
+                    let inequation = inequation+dy;
+                }
+                else {
+                    
+                    let b = b+1;
+                    let inequation = inequation-dx;
+                }
+            }
+        }
+        
+        return;
+    }
+    
+    function void draw_vertical(int y1, int y2, int x) {
+        
+        var int store;
+        
+        if(y1 > y2) {
+                
+                let store = y1;
+                let y1 = y2;
+                let y2 = store;
+        }
+            
+        while(~(y1 > y2)) {
+                
+            do Screen.drawPixel(x,y1);
+            let y1 = y1+1;
+        } 
+        
+        return;
+    }
+    
+    function void draw_horizontal(int x1, int x2, int y) {
+        
+        var int store;
+        
+        if(x1 > x2) {
+                
+            let store = x1;
+            let x1 = x2;
+            let x2 = store;
+        }
+            
+        while(~(x1 > x2)) {
+                
+            do Screen.drawPixel(x1,y);
+            let x1 = x1+1;
+        } 
+        
+        return;
+    }
+
+    /** Draws a filled rectangle where the top left corner
+     *  is (x1, y1) and the bottom right corner is (x2, y2). */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+        
+        while(~(y1 > y2)) {
+            
+            do Screen.drawLine(x1,y1,x2,y1);
+            
+            let y1 = y1+1;
+        }
+        
+        return;
+    }
+
+    /** Draws a filled circle of radius r around (cx, cy). */
+    function void drawCircle(int cx, int cy, int r) {
+        
+        var int dx,dy;
+        
+        let dy = -r;
+        
+        while(~(dy > r)) {
+            
+            let dx = Math.sqrt(Math.multiply(r,r)-Math.multiply(dy,dy));
+            
+            do Screen.drawLine(cx-dx,cy+dy,cx+dx,cy+dy);
+            
+            let dy = dy+1;
+        }
+        
+        return;
+    }
+    
+    function int modulo(int number, int divisor) {
+        
+        return number - Math.multiply(Math.divide(number,divisor),divisor);
+    }
+}

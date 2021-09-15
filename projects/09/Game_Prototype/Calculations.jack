@@ -1,0 +1,30 @@
+class Calculations {
+    
+    /*function int euclidic_norm(int x1, int y1, int x2, int y2) {
+        
+        var int x,y;
+        
+        let x = Math.abs(x1-x2);
+        let y = Math.abs(y1-y2);
+ 
+        let x = Math.multiply(x,x);
+        let y = Math.multiply(y,y);
+        
+        return Math.sqrt(x+y);
+    }
+    
+    function boolean collision(int x1, int y1, int x2, int y2, int r) {
+        
+        return Calculations.euclidic_norm(x1, y1, x2, y2) < r;
+    }*/
+    
+    function boolean collision(int x1, int y1, int x2, int y2, int r) {
+        
+        var int x,y;
+        
+        let x = Math.abs(x1-x2);
+        let y = Math.abs(y1-y2);
+        
+        return ((x<r) & (y<r));
+    }  
+}

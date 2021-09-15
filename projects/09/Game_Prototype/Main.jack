@@ -1,0 +1,139 @@
+class Main {
+    
+    static Enemies e1,e2,e3;
+    static boolean killed_1,killed_2,killed_3;
+    static int enemy_1_x,enemy_1_y,enemy_1_rad;
+    static int enemy_2_x,enemy_2_y,enemy_2_rad;
+    static int enemy_3_x,enemy_3_y,enemy_3_rad;
+    
+    function void main() {
+        
+        var int time;
+        var Character c;
+        var int wave,swordx,swordy;
+        
+        let c = Character.new(230,205);
+        
+        //Spawn wave of enemies
+        let wave = 1;
+        do Main.spawn(wave);
+         
+        let time = 0;
+        while(wave < 4) {
+            
+            let time = time+1;
+            
+            //Update sword coordinates
+            let swordx = c.getSwordx();
+            let swordy = c.getSwordy();
+        
+            //Up
+            if(Keyboard.keyPressed() = 87) {
+                do c.moveUp(c);
+                do Sys.wait(25);
+            }  
+            //Down
+            if(Keyboard.keyPressed() = 83) {
+                do c.moveDown(c);
+                do Sys.wait(25);
+            }
+            //Left  
+            if(Keyboard.keyPressed() = 65) {
+                do c.moveLeft(c);
+                do Sys.wait(25);
+            }
+            //Right 
+            if(Keyboard.keyPressed() = 68) {
+                do c.moveRight(c);
+                do Sys.wait(25);
+            }  
+            
+            //Check if sword tip hit the first enemy
+            if(Calculations.collision(swordx,swordy,enemy_1_x,enemy_1_y,enemy_1_rad) = true) {
+                let killed_1 = true;
+                do e1.killed();
+            }
+            
+            //Check if sword tip hit the second enemy
+            if(Calculations.collision(swordx,swordy,enemy_2_x,enemy_2_y,enemy_2_rad) = true) {
+                let killed_2 = true;
+                do e2.killed();
+            }
+            
+            //Check if sword tip hit the third enemy
+            if(Calculations.collision(swordx,swordy,enemy_3_x,enemy_3_y,enemy_3_rad) = true) {
+                let killed_3 = true;
+                do e3.killed();
+            }
+            
+            //If all enemies are dead, spawn a new wave
+            if(killed_1 & killed_2 & killed_3) {
+                let wave = wave + 1;
+                do Main.disposeEnemies();
+                
+                //Only 3 waves exist
+                if(wave < 4) {
+                    do Main.spawn(wave);
+                }
+            }
+        }
+       
+        //Finish message
+        do Screen.clearScreen();
+        do Output.printString("Finish");
+        do Output.println();
+        do Output.printString("Your time: ");
+        do Output.printInt(time);
+       
+        do Memory.deAlloc(c);
+        return;
+    }
+    
+    function void spawn(int wave) {
+        let killed_1 = false;
+        let killed_2 = false;
+        let killed_3 = false;
+        
+        if(wave = 1) {  
+            let e1 = Enemies.new(50,50,25);
+            let e2 = Enemies.new(200,50,25);
+            let e3 = Enemies.new(100,100,25);
+        }
+        if(wave = 2) {
+            let e1 = Enemies.new(300,50,25);
+            let e2 = Enemies.new(450,50,25);
+            let e3 = Enemies.new(400,100,25);
+        }
+        if(wave = 3) {       
+            let e1 = Enemies.new(30,120,25);
+            let e2 = Enemies.new(100,120,25);
+            let e3 = Enemies.new(50,70,25);
+        }
+        
+        //Coordinates for first enemy
+        let enemy_1_x = e1.getCenterx();
+        let enemy_1_y = e1.getCentery();
+        let enemy_1_rad = e1.getRadius();
+        
+        //Coordinates for second enemy
+        let enemy_2_x = e2.getCenterx();
+        let enemy_2_y = e2.getCentery();
+        let enemy_2_rad = e2.getRadius();
+        
+        //Coordinates for third enemy
+        let enemy_3_x = e3.getCenterx();
+        let enemy_3_y = e3.getCentery();
+        let enemy_3_rad = e3.getRadius();
+        
+        return;
+    } 
+    
+    function void disposeEnemies() {
+        do e1.dispose();
+        do e2.dispose();
+        do e3.dispose();
+        
+        return;
+    }
+}
+
